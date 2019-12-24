@@ -54,10 +54,9 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
     });
 });
 
-
 // @desc    Add a new product
 // @route   POST /api/v1.0/products
-// @access  Public
+// @access  Private
 exports.addProduct = asyncHandler(async (req, res, next) => {
     const product = await Product.create(req.body);
     console.log(product.product_images.typof);
@@ -68,7 +67,9 @@ exports.addProduct = asyncHandler(async (req, res, next) => {
     })
 })
 
-
+// @desc    Edit a product
+// @route   PUT /api/v1.0/products/:id
+// @access  Private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
@@ -81,4 +82,20 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
         );
     }
     res.status(200).json({ success: true, data: product });
+});
+
+// @desc    Delete a product
+// @route   DELETE /api/v1.0/products
+// @access  Private
+exports.deleteProduct = asyncHandler(async (req, res, next) => {
+    const product = await Product.findById(req.params.id)
+    if (!product) {
+        return next(
+            new ErrorResponse(`Product not found with id of ${req.params.id}`, 404)
+        );
+    }
+
+    product.remove();
+
+    res.status(200).json({ success: true, data: {} });
 });
